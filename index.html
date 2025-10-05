@@ -27,54 +27,58 @@
       <nav class="nav-menu">
         <a href="index.html">Upload</a>
         <a href="dashboard.html">Dashboard</a>
-        <a href="planet.html">Planets</a>
       </nav>
     </header>
 
-    <main class="upload-container">
-      <h2>Upload your data (.csv)</h2>
+    <main>
+      <div class="upload-container">
+        <h2>Upload Planet Data</h2>
+        <p>
+          Attention! Your <strong>.csv</strong> file must follow the same
+          variable order as the
+          <strong>Kepler Objects of Interest</strong> dataset available on the
+          NASA Exoplanet Archive website.
+        </p>
 
-      <div class="upload-box">
-        <input type="file" id="fileInput" hidden />
+        <!-- input invisível -->
+        <input type="file" id="fileInput" accept=".csv" hidden />
+
         <button id="uploadBtn" class="upload-btn">
-          <i class="fa-solid fa-desktop"></i> Upload From local files
+          <i class="fa-solid fa-file-arrow-up icon"></i> Select File
         </button>
+
         <p id="fileName" class="file-name"></p>
+
+        <button class="save-btn" id="saveBtn">
+          <i class="fa-solid fa-floppy-disk icon"></i> Save and Exit
+        </button>
       </div>
-
-      <form class="upload-form">
-        <label>Planet Name <input type="text" /></label>
-        <label>Epoch of Periastron <input type="text" /></label>
-        <label>Orbital period <input type="text" /></label>
-        <label>Planet Radius <input type="text" /></label>
-        <label>Transit Midpoint <input type="text" /></label>
-        <label>Stellar Radius <input type="text" /></label>
-        <label>Transit duration <input type="text" /></label>
-        <label>Eccentricity <input type="text" /></label>
-      </form>
-
-      <button class="save-btn" onclick="fadeOutAndRedirect('dashboard.html')">
-        Save and Exit
-      </button>
     </main>
 
     <script>
       const uploadBtn = document.getElementById("uploadBtn");
       const fileInput = document.getElementById("fileInput");
       const fileName = document.getElementById("fileName");
+      const saveBtn = document.getElementById("saveBtn");
 
+      // Abrir seletor de arquivo
       uploadBtn.addEventListener("click", () => fileInput.click());
 
+      // Mostrar nome do arquivo selecionado
       fileInput.addEventListener("change", () => {
         if (fileInput.files.length > 0) {
-          fileName.textContent = "File selected: " + fileInput.files[0].name;
-          uploadBtn.textContent = "✅ Data Uploaded";
+          const name = fileInput.files[0].name;
+          fileName.textContent = "📂 File selected: " + name;
+          uploadBtn.innerHTML =
+            '<i class="fa-solid fa-check icon"></i> Uploaded';
           uploadBtn.disabled = true;
           uploadBtn.style.background = "#2ecc71";
-          setTimeout(() => {
-            window.location.href = "index.html";
-          }, 1500);
         }
+      });
+
+      // Salvar e sair
+      saveBtn.addEventListener("click", () => {
+        fadeOutAndRedirect("dashboard.html");
       });
 
       // Fade-in ao carregar
@@ -82,7 +86,7 @@
         document.body.classList.add("fade-in");
       });
 
-      // Função de fade-out com redirecionamento
+      // Função de fade-out e redirecionamento
       function fadeOutAndRedirect(href) {
         document.body.classList.remove("fade-in");
         document.body.classList.add("fade-out");
