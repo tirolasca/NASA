@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planet Spotter — Upload Data</title>
+
+    <!-- Fonte e ícones -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+  </head>
+
+  <body class="space-bg">
+    <header class="header">
+      <div class="logo">
+        <div class="planet-icon"></div>
+        <h1>Planet <span>Spotter</span></h1>
+      </div>
+      <nav class="nav-menu">
+        <a href="index.html">Upload</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="planet.html">Planets</a>
+      </nav>
+    </header>
+
+    <main class="upload-container">
+      <h2>Upload your data (.csv)</h2>
+
+      <div class="upload-box">
+        <input type="file" id="fileInput" hidden />
+        <button id="uploadBtn" class="upload-btn">
+          <i class="fa-solid fa-desktop"></i> Upload From local files
+        </button>
+        <p id="fileName" class="file-name"></p>
+      </div>
+
+      <form class="upload-form">
+        <label>Planet Name <input type="text" /></label>
+        <label>Epoch of Periastron <input type="text" /></label>
+        <label>Orbital period <input type="text" /></label>
+        <label>Planet Radius <input type="text" /></label>
+        <label>Transit Midpoint <input type="text" /></label>
+        <label>Stellar Radius <input type="text" /></label>
+        <label>Transit duration <input type="text" /></label>
+        <label>Eccentricity <input type="text" /></label>
+      </form>
+
+      <button class="save-btn" onclick="fadeOutAndRedirect('dashboard.html')">
+        Save and Exit
+      </button>
+    </main>
+
+    <script>
+      const uploadBtn = document.getElementById("uploadBtn");
+      const fileInput = document.getElementById("fileInput");
+      const fileName = document.getElementById("fileName");
+
+      uploadBtn.addEventListener("click", () => fileInput.click());
+
+      fileInput.addEventListener("change", () => {
+        if (fileInput.files.length > 0) {
+          fileName.textContent = "File selected: " + fileInput.files[0].name;
+          uploadBtn.textContent = "✅ Data Uploaded";
+          uploadBtn.disabled = true;
+          uploadBtn.style.background = "#2ecc71";
+          setTimeout(() => {
+            window.location.href = "index.html";
+          }, 1500);
+        }
+      });
+
+      // Fade-in ao carregar
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.classList.add("fade-in");
+      });
+
+      // Função de fade-out com redirecionamento
+      function fadeOutAndRedirect(href) {
+        document.body.classList.remove("fade-in");
+        document.body.classList.add("fade-out");
+        setTimeout(() => {
+          window.location.href = href;
+        }, 600);
+      }
+    </script>
+  </body>
+</html>

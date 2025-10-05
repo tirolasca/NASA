@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Planet Spotter — Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="space-bg">
+    <header class="header">
+      <div class="logo">
+        <div class="planet-icon"></div>
+        <h1>Planet <span>Spotter</span></h1>
+      </div>
+      <nav class="nav-menu">
+        <a href="index.html">Upload</a>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="planet.html">Planets</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <div class="dashboard-container">
+        <!-- ======= GRÁFICOS COM CARDS ABAIXO ======= -->
+        <section class="charts-block">
+          <!-- Primeiro gráfico -->
+          <div class="graph-block">
+            <div class="card text-card">
+              <span class="highlight">8540</span> entries analyzed
+            </div>
+            <div class="chart">
+              <canvas id="chart1"></canvas>
+              <p>
+                <span class="highlight">6.3%</span> of the analyzed entries were
+                confirmed as real exoplanets
+              </p>
+            </div>
+            <div class="cards-block">
+              <!-- Removido o primeiro card "Analyzed 8540 data inputs" -->
+              <div class="card">
+                <span class="highlight">540</span> inputs were real exoplanets
+              </div>
+              <div class="card">
+                <span class="highlight">116</span> of these exoplanets have an
+                atmosphere
+              </div>
+            </div>
+          </div>
+
+          <!-- Segundo gráfico -->
+          <div class="graph-block">
+            <div class="card text-card">
+              <span class="highlight">338</span> stars with exoplanets
+            </div>
+            <div class="chart">
+              <canvas id="chart2"></canvas>
+              <p>
+                In total, <span class="highlight">215</span> exoplanets (<span
+                  class="highlight"
+                  >39.8%</span
+                >) are in the habitable zone
+              </p>
+            </div>
+            <div class="cards-block">
+              <div class="card">
+                In total, <span class="highlight">338</span> different stars
+                contain exoplanets
+              </div>
+              <div class="card">
+                Each star contains an average of
+                <span class="highlight">1.6</span> exoplanets
+              </div>
+              <div class="card link-card">
+                <a href="planet.html"
+                  >Click here to view the spectroscopic analysis of these
+                  atmospheres</a
+                >
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ======= DOWNLOAD ======= -->
+        <p class="note">
+          If you wish, you can download the file with the analyzed data below.
+        </p>
+        <button class="download-btn">⬇ Download Data</button>
+      </div>
+      <!-- fim dashboard-container -->
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+    <script>
+      // Primeiro gráfico
+      const chart1 = new Chart(document.getElementById("chart1"), {
+        type: "doughnut",
+        data: {
+          labels: ["Exoplanets", "Others"],
+          datasets: [
+            {
+              data: [6.3, 93.7],
+              backgroundColor: ["#ffb300", "#222844"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "70%",
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              color: "#fff",
+              font: { size: 14, weight: "bold" }, // negrito
+              formatter: (value, ctx) => {
+                const sum = ctx.chart.data.datasets[0].data.reduce(
+                  (a, b) => a + b,
+                  0
+                );
+                const percentage = ((value / sum) * 100).toFixed(1) + "%";
+                return percentage;
+              },
+            },
+          },
+        },
+        plugins: [ChartDataLabels],
+      });
+
+      // Segundo gráfico
+      const chart2 = new Chart(document.getElementById("chart2"), {
+        type: "doughnut",
+        data: {
+          labels: ["Habitable", "Non-habitable"],
+          datasets: [
+            {
+              data: [39.8, 60.2],
+              backgroundColor: ["#ffb300", "#222844"],
+              borderWidth: 0,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: "70%",
+          plugins: {
+            legend: { display: false },
+            datalabels: {
+              color: "#fff",
+              font: { size: 14, weight: "bold" }, // negrito
+              formatter: (value, ctx) => {
+                const sum = ctx.chart.data.datasets[0].data.reduce(
+                  (a, b) => a + b,
+                  0
+                );
+                const percentage = ((value / sum) * 100).toFixed(1) + "%";
+                return percentage;
+              },
+            },
+          },
+        },
+        plugins: [ChartDataLabels],
+      });
+
+      document.addEventListener("DOMContentLoaded", () =>
+        document.body.classList.add("fade-in")
+      );
+    </script>
+  </body>
+</html>
