@@ -21,144 +21,142 @@
     <main class="container">
       <div class="dashboard-container">
         <section class="charts-block">
-          <!-- Primeiro gráfico -->
+          <!-- BLOCO 1 -->
           <div class="graph-block">
             <div class="card text-card">
-              <span class="highlight">8540</span> entries analyzed
+              <span id="totalEntries" class="highlight">0</span> entries analyzed
             </div>
             <div class="chart">
               <canvas id="chart1"></canvas>
               <p>
-                <span class="highlight">6.3%</span> of the analyzed entries were
-                confirmed as real exoplanets
+                <span id="percentConfirmed" class="highlight">0%</span> of the analyzed entries were confirmed as real exoplanets
               </p>
             </div>
             <div class="cards-block">
               <div class="card">
-                <span class="highlight">540</span> inputs were real exoplanets
-              </div>
-              <div class="card">
-                <span class="highlight">116</span> of these exoplanets have an
-                atmosphere
+                <span id="confirmedExoplanets" class="highlight">0</span> inputs were real exoplanets
               </div>
             </div>
           </div>
 
-          <!-- Segundo gráfico -->
+          <!-- BLOCO 2 -->
           <div class="graph-block">
             <div class="card text-card">
-              <span class="highlight">338</span> stars with exoplanets
+              <span id="starsWithPlanets" class="highlight">0</span> stars with exoplanets
             </div>
             <div class="chart">
               <canvas id="chart2"></canvas>
-              <p>
-                In total, <span class="highlight">215</span> exoplanets (<span
-                  class="highlight"
-                  >39.8%</span
-                >) are in the habitable zone
-              </p>
             </div>
             <div class="cards-block">
               <div class="card">
-                In total, <span class="highlight">338</span> different stars
-                contain exoplanets
+                <span id="starsWithoutPlanetsCard" class="highlight">0</span> stars do not have exoplanets
               </div>
               <div class="card">
-                Each star contains an average of
-                <span class="highlight">1.6</span> exoplanets
+                Each star contains an average of <span id="avgPerStar" class="highlight">0</span> exoplanets
               </div>
             </div>
           </div>
         </section>
 
+        <!-- DOWNLOAD -->
         <p class="note">
           If you wish, you can download the file with the analyzed data below.
         </p>
-        <button class="download-btn">⬇ Download Data</button>
+        <button id="downloadBtn" class="download-btn">⬇ Download Data</button>
       </div>
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
+
     <script>
-      // Ajusta altura do gráfico conforme valores e tela
-      function adjustChartHeight(chartId, dataset) {
-        const chartContainer = document.getElementById(chartId).parentElement;
-        const maxValue = Math.max(...dataset);
-        const isMobile = window.innerWidth <= 600;
-        const minHeight = isMobile ? 180 : 250;
-        const maxHeight = isMobile ? 300 : 500;
-        const scaleFactor = Math.min(maxValue / 100, 1);
-        const newHeight = minHeight + (maxHeight - minHeight) * scaleFactor;
-        chartContainer.style.height = newHeight + "px";
-      }
+      document.addEventListener("DOMContentLoaded", () => {
+        document.body.classList.add("fade-in");
 
-      const data1 = [6.3, 93.7];
-      const data2 = [39.8, 60.2];
+        const data = JSON.parse(localStorage.getItem("exoplanetData")) || {};
 
-      adjustChartHeight("chart1", data1);
-      adjustChartHeight("chart2", data2);
+        // BLOCO 1 — Exoplanetas confirmados
+        document.getElementById("totalEntries").textContent = data.total_entries || 0;
+        document.getElementById("percentConfirmed").textContent = (data.percent_confirmed || 0).toFixed(4) + "%";
+        document.getElementById("confirmedExoplanets").textContent = data.confirmed_exoplanets || 0;
 
-      window.addEventListener("resize", () => {
-        adjustChartHeight("chart1", data1);
-        adjustChartHeight("chart2", data2);
-      });
+        // BLOCO 2 — Estrelas com/sem exoplanetas
+        const starsWithExoplanets = data.stars_with_exoplanets || 8214;
+        const totalStarsObserved = data.total_stars_observed || 10000; // ajuste conforme dataset
+        const starsWithoutExoplanets = totalStarsObserved - starsWithExoplanets;
 
-      const chartOptions = {
-        responsive: true,
-        maintainAspectRatio: false,
-        cutout: "50%",
-        plugins: {
-          legend: { display: false },
-          datalabels: {
-            color: "#fff",
-            font: { size: 14, weight: "bold" },
-            formatter: (value, ctx) => {
-              const sum = ctx.chart.data.datasets[0].data.reduce(
-                (a, b) => a + b,
-                0
-              );
-              return ((value / sum) * 100).toFixed(1) + "%";
-            },
+        document.getElementById("starsWithPlanets").textContent = starsWithExoplanets;
+        document.getElementById("starsWithoutPlanetsCard").textContent = starsWithoutExoplanets;
+        document.getElementById("avgPerStar").textContent = (data.avg_exoplanets_per_star || 1.6).toFixed(4);
+
+        // GRÁFICO 1 — Exoplanetas confirmados
+        new Chart(document.getElementById("chart1"), {
+          type: "doughnut",
+          data: {
+            labels: ["Exoplanets", "Others"],
+            datasets: [{
+              data: [data.percent_confirmed || 0, 100 - (data.percent_confirmed || 0)],
+              backgroundColor: ["#ffb300", "#222844"],
+              borderWidth: 0
+            }]
           },
-        },
-      };
+          options: {
+            cutout: "70%",
+            plugins: {
+              legend: {
+                display: true,
+                 labels: {
+                  color: '#fff'}
+              },
+              datalabels: {
+                color: "#fff",
+                font: { size: 14, weight: "bold" },
+                formatter: (value) => value.toFixed(4)
+              }
+            }
+          },
+          plugins: [ChartDataLabels]
+        });
 
-      new Chart(document.getElementById("chart1"), {
-        type: "doughnut",
-        data: {
-          labels: ["Exoplanets", "Others"],
-          datasets: [
-            {
-              data: data1,
+        // GRÁFICO 2 — Estrelas com vs sem exoplanetas
+        new Chart(document.getElementById("chart2"), {
+          type: "doughnut",
+          data: {
+            labels: ["With Exoplanets", "Without Exoplanets"],
+            datasets: [{
+              data: [starsWithExoplanets, starsWithoutExoplanets],
               backgroundColor: ["#ffb300", "#222844"],
-              borderWidth: 0,
-            },
-          ],
-        },
-        options: chartOptions,
-        plugins: [ChartDataLabels],
-      });
+              borderWidth: 0
+            }]
+          },
+          options: {
+            cutout: "70%",
+            plugins: {
+              legend: {
+                display: true,
+                 labels: {
+                  color: '#fff'}
+              },
+              datalabels: {
+                color: "#fff",
+                font: { size: 14, weight: "bold" },
+                formatter: (value) => value.toFixed(0)
+              }
+            }
+          },
+          plugins: [ChartDataLabels]
+        });
 
-      new Chart(document.getElementById("chart2"), {
-        type: "doughnut",
-        data: {
-          labels: ["Habitable", "Non-habitable"],
-          datasets: [
-            {
-              data: data2,
-              backgroundColor: ["#ffb300", "#222844"],
-              borderWidth: 0,
-            },
-          ],
-        },
-        options: chartOptions,
-        plugins: [ChartDataLabels],
+        // Download CSV
+        document.getElementById("downloadBtn").addEventListener("click", () => {
+          if (data.download_csv) {
+            window.location.href = "https://exobridgeapi.onrender.com" + data.download_csv;
+          } else {
+            alert("No download link available");
+          }
+        });
       });
-
-      document.addEventListener("DOMContentLoaded", () =>
-        document.body.classList.add("fade-in")
-      );
     </script>
   </body>
 </html>
+
