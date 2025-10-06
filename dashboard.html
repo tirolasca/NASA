@@ -81,8 +81,8 @@
         document.getElementById("confirmedExoplanets").textContent = data.confirmed_exoplanets || 0;
 
         // BLOCO 2 — Estrelas com/sem exoplanetas
-        const starsWithExoplanets = data.stars_with_exoplanets || 8214;
-        const totalStarsObserved = data.total_stars_observed || 10000; // ajuste conforme dataset
+        const starsWithExoplanets = data.stars_with_exoplanets || 0;
+        const totalStarsObserved = data.total_entries || 0; // ajuste conforme dataset
         const starsWithoutExoplanets = totalStarsObserved - starsWithExoplanets;
 
         document.getElementById("starsWithPlanets").textContent = starsWithExoplanets;
@@ -159,4 +159,5 @@
     </script>
   </body>
 </html>
+
 
