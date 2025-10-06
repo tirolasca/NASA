@@ -20,7 +20,6 @@
 
     <main class="container">
       <div class="dashboard-container">
-        <!-- ======= GRÁFICOS COM CARDS ABAIXO ======= -->
         <section class="charts-block">
           <!-- Primeiro gráfico -->
           <div class="graph-block">
@@ -35,7 +34,6 @@
               </p>
             </div>
             <div class="cards-block">
-              <!-- Removido o primeiro card "Analyzed 8540 data inputs" -->
               <div class="card">
                 <span class="highlight">540</span> inputs were real exoplanets
               </div>
@@ -73,87 +71,88 @@
           </div>
         </section>
 
-        <!-- ======= DOWNLOAD ======= -->
         <p class="note">
           If you wish, you can download the file with the analyzed data below.
         </p>
         <button class="download-btn">⬇ Download Data</button>
       </div>
-      <!-- fim dashboard-container -->
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0"></script>
     <script>
-      // Primeiro gráfico
-      const chart1 = new Chart(document.getElementById("chart1"), {
+      // Ajusta altura do gráfico conforme valores e tela
+      function adjustChartHeight(chartId, dataset) {
+        const chartContainer = document.getElementById(chartId).parentElement;
+        const maxValue = Math.max(...dataset);
+        const isMobile = window.innerWidth <= 600;
+        const minHeight = isMobile ? 180 : 250;
+        const maxHeight = isMobile ? 300 : 500;
+        const scaleFactor = Math.min(maxValue / 100, 1);
+        const newHeight = minHeight + (maxHeight - minHeight) * scaleFactor;
+        chartContainer.style.height = newHeight + "px";
+      }
+
+      const data1 = [6.3, 93.7];
+      const data2 = [39.8, 60.2];
+
+      adjustChartHeight("chart1", data1);
+      adjustChartHeight("chart2", data2);
+
+      window.addEventListener("resize", () => {
+        adjustChartHeight("chart1", data1);
+        adjustChartHeight("chart2", data2);
+      });
+
+      const chartOptions = {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "50%",
+        plugins: {
+          legend: { display: false },
+          datalabels: {
+            color: "#fff",
+            font: { size: 14, weight: "bold" },
+            formatter: (value, ctx) => {
+              const sum = ctx.chart.data.datasets[0].data.reduce(
+                (a, b) => a + b,
+                0
+              );
+              return ((value / sum) * 100).toFixed(1) + "%";
+            },
+          },
+        },
+      };
+
+      new Chart(document.getElementById("chart1"), {
         type: "doughnut",
         data: {
           labels: ["Exoplanets", "Others"],
           datasets: [
             {
-              data: [6.3, 93.7],
+              data: data1,
               backgroundColor: ["#ffb300", "#222844"],
               borderWidth: 0,
             },
           ],
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: "70%",
-          plugins: {
-            legend: { display: false },
-            datalabels: {
-              color: "#fff",
-              font: { size: 14, weight: "bold" }, // negrito
-              formatter: (value, ctx) => {
-                const sum = ctx.chart.data.datasets[0].data.reduce(
-                  (a, b) => a + b,
-                  0
-                );
-                const percentage = ((value / sum) * 100).toFixed(1) + "%";
-                return percentage;
-              },
-            },
-          },
-        },
+        options: chartOptions,
         plugins: [ChartDataLabels],
       });
 
-      // Segundo gráfico
-      const chart2 = new Chart(document.getElementById("chart2"), {
+      new Chart(document.getElementById("chart2"), {
         type: "doughnut",
         data: {
           labels: ["Habitable", "Non-habitable"],
           datasets: [
             {
-              data: [39.8, 60.2],
+              data: data2,
               backgroundColor: ["#ffb300", "#222844"],
               borderWidth: 0,
             },
           ],
         },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          cutout: "70%",
-          plugins: {
-            legend: { display: false },
-            datalabels: {
-              color: "#fff",
-              font: { size: 14, weight: "bold" }, // negrito
-              formatter: (value, ctx) => {
-                const sum = ctx.chart.data.datasets[0].data.reduce(
-                  (a, b) => a + b,
-                  0
-                );
-                const percentage = ((value / sum) * 100).toFixed(1) + "%";
-                return percentage;
-              },
-            },
-          },
-        },
+        options: chartOptions,
         plugins: [ChartDataLabels],
       });
 
