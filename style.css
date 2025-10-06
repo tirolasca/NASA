@@ -222,7 +222,7 @@ body.fade-out .upload-box {
 
 /* ======= CHARTS ======= */
 .chart {
-  width: 100%;
+  width: 90%;
   max-width: 600px;
   height: auto;
   display: flex;
@@ -232,7 +232,6 @@ body.fade-out .upload-box {
   position: relative;
   margin-bottom: 1rem;
 }
-
 .chart canvas {
   width: 100% !important;
   height: 100% !important;
