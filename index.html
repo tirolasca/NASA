@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Planet Spotter — Upload Data</title>
 
-    <!-- Fonte e ícones -->
     <link
       href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap"
       rel="stylesheet"
@@ -40,7 +39,6 @@
           NASA Exoplanet Archive website.
         </p>
 
-        <!-- input invisível -->
         <input type="file" id="fileInput" accept=".csv" hidden />
 
         <button id="uploadBtn" class="upload-btn">
@@ -50,7 +48,7 @@
         <p id="fileName" class="file-name"></p>
 
         <button class="save-btn" id="saveBtn">
-          <i class="fa-solid fa-floppy-disk icon"></i> Save and Exit
+          <i class="fa-solid fa-floppy-disk icon"></i> Save and Edit
         </button>
       </div>
     </main>
@@ -61,10 +59,8 @@
       const fileName = document.getElementById("fileName");
       const saveBtn = document.getElementById("saveBtn");
 
-      // Abrir seletor de arquivo
       uploadBtn.addEventListener("click", () => fileInput.click());
 
-      // Mostrar nome do arquivo selecionado
       fileInput.addEventListener("change", () => {
         if (fileInput.files.length > 0) {
           const name = fileInput.files[0].name;
@@ -76,17 +72,51 @@
         }
       });
 
-      // Salvar e sair
-      saveBtn.addEventListener("click", () => {
-        fadeOutAndRedirect("dashboard.html");
+      saveBtn.addEventListener("click", async () => {
+        if (!fileInput.files.length) {
+          alert("Please select a CSV file first!");
+          return;
+        }
+
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        saveBtn.disabled = true;
+        saveBtn.innerHTML = "⏳ Analyzing...";
+
+        try {
+          const response = await fetch("https://exobridgeapi.onrender.com/predict_exoplanets", {
+            method: "POST",
+            body: formData,
+          });
+
+          const data = await response.json();
+
+          if (data.erro) {
+            alert("❌ Error: " + data.erro);
+            saveBtn.disabled = false;
+            saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk icon"></i> Save and Edit';
+            return;
+          }
+
+          localStorage.setItem("exoplanetData", JSON.stringify(data));
+
+          alert(`✅ Analysis complete! File: ${data.filename}`);
+
+          fadeOutAndRedirect("dashboard.html");
+
+        } catch (err) {
+          alert("❌ Failed to connect to the API: " + err.message);
+          saveBtn.disabled = false;
+          saveBtn.innerHTML = '<i class="fa-solid fa-floppy-disk icon"></i> Save and Edit';
+        }
       });
 
-      // Fade-in ao carregar
       document.addEventListener("DOMContentLoaded", () => {
         document.body.classList.add("fade-in");
       });
 
-      // Função de fade-out e redirecionamento
       function fadeOutAndRedirect(href) {
         document.body.classList.remove("fade-in");
         document.body.classList.add("fade-out");
